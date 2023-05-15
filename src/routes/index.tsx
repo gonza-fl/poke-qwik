@@ -1,112 +1,101 @@
-import { component$ } from '@builder.io/qwik';
+import { $, component$, useSignal } from '@builder.io/qwik';
 import type { DocumentHead } from '@builder.io/qwik-city';
+import { PokemonImage } from '~/components/pokemon/pokemon-image';
 
-import Counter from '~/components/starter/counter/counter';
-import Hero from '~/components/starter/hero/hero';
-import Infobox from '~/components/starter/infobox/infobox';
-import Starter from '~/components/starter/next-steps/next-steps';
+const VALUES = {
+  DEFAULT_SIZE: 150,
+  DEFAULT_POSITION: true,
+  DEFAULT_SHOW_POKEMON: true,
+  NEGATIVE_NUMBER_ONE: -1,
+  POSITIVE_NUMBER_ONE: +1,
+  MIN_ID: 0,
+  DOUBLE: 2,
+  TRIPLE: 3,
+};
 
 export default component$(() => {
+  const pokemonId = useSignal<number>(VALUES.POSITIVE_NUMBER_ONE);
+  const size = useSignal<number>(VALUES.DEFAULT_SIZE);
+  const showFront = useSignal<boolean>(VALUES.DEFAULT_POSITION);
+  const showPokemon = useSignal(VALUES.DEFAULT_SHOW_POKEMON);
+
+  const changePokemonId = $((value: number) => {
+    if (pokemonId.value + value > VALUES.MIN_ID) {
+      pokemonId.value += value;
+    }
+  });
+
+  const reSize = $(
+    (value: number): number => (size.value = VALUES.DEFAULT_SIZE * value)
+  );
+
   return (
     <>
-      <Hero />
-      <Starter />
+      <span class='text-2xl'>Buscador simple</span>
+      <span class='text-9xl'>{pokemonId}</span>
 
-      <div role="presentation" class="ellipsis"></div>
-      <div role="presentation" class="ellipsis ellipsis-purple"></div>
+      <PokemonImage
+        id={pokemonId.value}
+        size={size.value}
+        isFront={showFront.value}
+        isPokemonVisible={showPokemon.value}
+      />
 
-      <div class="container container-center container-spacing-xl">
-        <h3>
-          You can <span class="highlight">count</span>
-          <br /> on me
-        </h3>
-        <Counter />
+      <div class='mt-2'>
+        <button
+          onClick$={() => changePokemonId(VALUES.NEGATIVE_NUMBER_ONE)}
+          class='btn btn-primary mr-2'
+        >
+          Anterior
+        </button>
+        <button
+          onClick$={() => changePokemonId(VALUES.POSITIVE_NUMBER_ONE)}
+          class='btn btn-primary'
+        >
+          Siguiente
+        </button>
       </div>
-
-      <div class="container container-flex">
-        <Infobox>
-          <div q:slot="title" class="icon icon-cli">
-            CLI Commands
-          </div>
-          <>
-            <p>
-              <code>npm run dev</code>
-              <br />
-              Starts the development server and watches for changes
-            </p>
-            <p>
-              <code>npm run preview</code>
-              <br />
-              Creates production build and starts a server to preview it
-            </p>
-            <p>
-              <code>npm run build</code>
-              <br />
-              Creates production build
-            </p>
-            <p>
-              <code>npm run qwik add</code>
-              <br />
-              Runs the qwik CLI to add integrations
-            </p>
-          </>
-        </Infobox>
-
-        <div>
-          <Infobox>
-            <div q:slot="title" class="icon icon-apps">
-              Example Apps
-            </div>
-            <p>
-              Have a look at the <a href="/demo/flower">Flower App</a> or the{' '}
-              <a href="/demo/todolist">Todo App</a>.
-            </p>
-          </Infobox>
-
-          <Infobox>
-            <div q:slot="title" class="icon icon-community">
-              Community
-            </div>
-            <ul>
-              <li>
-                <span>Questions or just want to say hi? </span>
-                <a href="https://qwik.builder.io/chat" target="_blank">
-                  Chat on discord!
-                </a>
-              </li>
-              <li>
-                <span>Follow </span>
-                <a href="https://twitter.com/QwikDev" target="_blank">
-                  @QwikDev
-                </a>
-                <span> on Twitter</span>
-              </li>
-              <li>
-                <span>Open issues and contribute on </span>
-                <a href="https://github.com/BuilderIO/qwik" target="_blank">
-                  GitHub
-                </a>
-              </li>
-              <li>
-                <span>Watch </span>
-                <a href="https://qwik.builder.io/media/" target="_blank">
-                  Presentations, Podcasts, Videos, etc.
-                </a>
-              </li>
-            </ul>
-          </Infobox>
-        </div>
+      <div class='mt-2'>
+        <button
+          onClick$={() => (size.value = VALUES.DEFAULT_SIZE)}
+          class='btn btn-primary mr-2'
+        >
+          X1
+        </button>
+        <button
+          onClick$={() => reSize(VALUES.DOUBLE)}
+          class='btn btn-primary mr-2'
+        >
+          x2
+        </button>
+        <button onClick$={() => reSize(VALUES.TRIPLE)} class='btn btn-primary'>
+          x3
+        </button>
+      </div>
+      <div class='mt-2'>
+        <button
+          onClick$={() => (showFront.value = !showFront.value)}
+          class='btn btn-primary mr-2'
+        >
+          Ver {!showFront.value ? 'frente' : 'espalda'}
+        </button>
+        <button
+          onClick$={() => (showPokemon.value = !showPokemon.value)}
+          class='btn btn-primary mr-2'
+        >
+          {!showPokemon.value ? 'Mostrar' : 'Ocultar'}
+        </button>
       </div>
     </>
   );
 });
 
 export const head: DocumentHead = {
-  title: 'Welcome to Qwik',
+  title: 'Poke-Qwik',
   meta: [
     {
       name: 'description',
-      content: 'Qwik site description',
+      content: 'Esta es mi primera aplicación en Qwik',
     },
   ],
 };
