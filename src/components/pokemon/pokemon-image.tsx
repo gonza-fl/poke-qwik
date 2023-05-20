@@ -1,7 +1,9 @@
 import { component$, useSignal, useTask$ } from '@builder.io/qwik';
+import { useNavigate } from '@builder.io/qwik-city';
+import styles from './pokemonImage.module.css';
 
 interface Props {
-  id: number;
+  id: number | string;
   size?: number;
   isFront?: boolean;
   isPokemonVisible: boolean;
@@ -10,6 +12,8 @@ interface Props {
 export const PokemonImage = component$(
   ({ id, size = 200, isFront = true, isPokemonVisible }: Props) => {
     const imageLoaded = useSignal(false);
+    const nav = useNavigate();
+
     useTask$(({ track }) => {
       track(() => id);
       imageLoaded.value = false;
@@ -35,7 +39,9 @@ export const PokemonImage = component$(
               'brightness-0': !isPokemonVisible,
             },
             'transition-all',
+            styles.pokeImg,
           ]}
+          onClick$={() => nav(`/pokemon/${id}`)}
         />
       </div>
     );
