@@ -1,4 +1,9 @@
-import { component$, useSignal, useTask$ } from '@builder.io/qwik';
+import {
+  component$,
+  useComputed$,
+  useSignal,
+  useTask$,
+} from '@builder.io/qwik';
 import { useNavigate } from '@builder.io/qwik-city';
 import styles from './pokemonImage.module.css';
 
@@ -19,6 +24,12 @@ export const PokemonImage = component$(
       imageLoaded.value = false;
     });
 
+    const imageUrl = useComputed$(() => {
+      return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
+        !isFront ? 'back/' : ''
+      }${id}.png`;
+    });
+
     return (
       <div
         class='flex items-center justify-center'
@@ -26,9 +37,7 @@ export const PokemonImage = component$(
       >
         {!imageLoaded.value && <span>Cargando...</span>}
         <img
-          src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
-            !isFront ? 'back/' : ''
-          }${id}.png`}
+          src={imageUrl.value}
           alt='pokemon sprite'
           width={size}
           height={size}
